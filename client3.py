@@ -10,7 +10,7 @@ start_timer = None
 async def send_ping():
     global start_timer
     start_timer = time.time()
-    await sio.emit('ping_from_client', {"foo" : 'bar'})
+    await sio.emit('ping_from_client', {"foo" : 'yeee'})
 
 
 @sio.event
@@ -31,8 +31,13 @@ async def pong_from_server(data):
 
 
 async def start_server():
-    await sio.connect('http://localhost:80')
-    await sio.wait()
+    try:
+        await sio.connect('http://localhost:80')
+        await sio.wait()
+    except:
+        print('Cannot connect to server, retrying in 5 seconds')
+        time.sleep(5)
+        await start_server()
 
 
 if __name__ == '__main__':

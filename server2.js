@@ -10,8 +10,16 @@ app.get('/', function (req, res) {
 });
 
 io.on('connection', function (socket) {
+  console.log('Client connected');
   socket.emit('news', { hello: 'world' });
-  socket.on('my other event', function (data) {
+
+  socket.on('my other event', (data) => {
     console.log(data);
   });
+
+  socket.on('ping_from_client', (data) => {
+    console.log('Received:', data);
+    socket.emit('pong_from_server', {data : 'something'});
+  });
 });
+
