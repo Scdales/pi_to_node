@@ -1,3 +1,6 @@
+//https://socket.io/docs/
+//https://dev.to/kauresss/socket-io-guide-for-newbies-5hdm
+
 var fs = require('fs')
 , http = require('http')
 , socketio = require('socket.io');
