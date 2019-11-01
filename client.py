@@ -6,7 +6,7 @@ loop = asyncio.get_event_loop()
 sio = socketio.AsyncClient(reconnection=True, reconnection_attempts=0, reconnection_delay=1, reconnection_delay_max=5, randomization_factor=0.5, logger=False, binary=False, json=None )
 
 start_timer = None
-
+connected = False
 
 async def send_ping():
     global start_timer
@@ -16,7 +16,9 @@ async def send_ping():
 
 @sio.event
 async def connect():
+    global connected
     print('connected to server')
+    connected = True
     print('my sid is', sio.sid)
     await send_ping()
 
@@ -32,7 +34,14 @@ async def pong_from_server(data):
 
 
 async def start_server():
-    await sio.connect('http://localhost:80')
+    while(connected != True):
+        try:
+            await sio.connect('http://localhost:80')
+            await sio.wait()
+        except:
+            print('Cannot connect to server, retrying in 5 seconds')
+            time.sleep(5)
+    
     # try:
     #     await sio.connect('http://localhost:80')
     #     # await sio.wait()
