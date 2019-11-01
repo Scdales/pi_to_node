@@ -1,20 +1,25 @@
-//https://socket.io/docs/
-//https://dev.to/kauresss/socket-io-guide-for-newbies-5hdm
+var app = require('express')();
+var server = require('http').Server(app);
+var io = require('socket.io')(server);
 
-var fs = require('fs')
-, http = require('http')
-, socketio = require('socket.io');
+server.listen(80);
+// WARNING: app.listen(80) will NOT work here!
 
-var server = http.createServer(function(req, res) {
-        res.writeHead(200, { 'Content-type': 'text/html'});
-        res.end(fs.readFileSync(__dirname + '/index.html'));
-        }).listen(8090, function() {
-            console.log('Listening at: http://localhost:8090');
-            });
-
-socketio.listen(server).on('connection', function (socket) {
-    socket.on('message', function (msg) {
-    console.log('Message Received: ', msg);
-    socket.broadcast.emit('message', msg);
-    });        
+app.get('/', function (req, res) {
+  res.sendFile(__dirname + '/index2.html');
 });
+
+io.on('connection', function (socket) {
+  console.log('Client connected');
+  socket.emit('news', { hello: 'world' });
+
+  socket.on('my other event', (data) => {
+    console.log(data);
+  });
+
+  socket.on('ping_from_client', (data) => {
+    console.log('Received:', data);
+    socket.emit('pong_from_server', {data : 'something'});
+  });
+});
+
